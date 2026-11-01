@@ -1,0 +1,33 @@
+[project]
+name = "prompt-tests"
+version = "0.1.0"
+description = "pytest for prompts: YAML test suites, 9 scorer types including LLM-as-judge and semantic similarity, multi-model comparison, response caching, self-contained HTML reports and a CI pass/fail gate."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Abbishekk DGS" }]
+requires-python = ">=3.11"
+dependencies = ["httpx>=0.27", "pyyaml>=6", "jsonschema>=4.21", "numpy>=1.26"]
+
+[project.urls]
+Homepage = "https://abbishekkdgs.tech"
+Repository = "https://github.com/Abbishekk-DGS/prompt-tests"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+prompt-tests = "prompt_tests.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/prompt_tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]

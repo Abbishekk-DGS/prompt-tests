@@ -1,0 +1,107 @@
+# A compact, varied suite for small local models. Copy it and replace the cases with your own.
+name: core-skills
+system: You are a precise assistant. Follow the instructions exactly.
+temperature: 0
+
+cases:
+  # --- arithmetic & reasoning -------------------------------------------------------------
+  - id: arithmetic
+    tags: [reasoning]
+    input: What is 17 * 23? Reply with only the number.
+    assert:
+      - numeric: 391
+
+  - id: word-problem
+    tags: [reasoning]
+    input: >
+      A shop sells pens at 12 rupees each. Asha buys 7 pens and pays with a 100 rupee note.
+      How much change does she get? End your answer with the number.
+    assert:
+      - numeric: 16
+
+  - id: unit-conversion
+    tags: [reasoning]
+    input: How many minutes are in 3.5 hours? Reply with only the number.
+    assert:
+      - numeric: 210
+
+  - id: logic
+    tags: [reasoning]
+    input: >
+      All bloops are razzies. All razzies are lazzies. Are all bloops definitely lazzies?
+      Answer yes or no, then one sentence of explanation.
+    assert:
+      - regex: "^\\W*yes"
+
+  # --- structured output ------------------------------------------------------------------
+  - id: json-extraction
+    tags: [structured]
+    input: >
+      Extract the person as JSON with keys name (string), age (integer) and city (string).
+      Reply with JSON only. Text: "Meera, 29, moved to Coimbatore last year."
+    assert:
+      - json_schema:
+          type: object
+          required: [name, age, city]
+          properties:
+            name: {type: string}
+            age: {type: integer}
+            city: {type: string}
+      - contains: [Meera, Coimbatore, "29"]
+
+  - id: json-list
+    tags: [structured]
+    input: >
+      Return a JSON array of the three primary colours of light, lowercase strings only.
+      JSON only, no prose.
+    assert:
+      - json_schema: {type: array, minItems: 3, maxItems: 3, items: {type: string}}
+      - contains: [red, green, blue]
+
+  # --- instruction following --------------------------------------------------------------
+  - id: word-limit
+    tags: [instructions]
+    input: Explain what a vector database is in at most 25 words.
+    assert:
+      - max_words: 25
+      - contains: [vector]
+
+  - id: forbidden-word
+    tags: [instructions]
+    input: Describe the sun in one sentence without using the word "hot".
+    assert:
+      - not_contains: [hot]
+      - max_words: 40
+
+  - id: format-bullets
+    tags: [instructions]
+    input: List exactly three benefits of unit tests as a markdown bullet list, nothing else.
+    assert:
+      - regex: "^(\\s*[-*] .+\\n?){3}\\s*$"
+
+  # --- knowledge & semantics --------------------------------------------------------------
+  - id: capital
+    tags: [knowledge]
+    input: What is the capital of Australia? One word.
+    assert:
+      - exact: Canberra
+
+  - id: definition
+    tags: [knowledge]
+    input: In one sentence, what is overfitting in machine learning?
+    assert:
+      - semantic: >
+          Overfitting is when a model learns the training data too closely, including noise,
+          so it performs well on training data but poorly on new, unseen data.
+        threshold: 0.75
+
+  # --- judged -----------------------------------------------------------------------------
+  - id: explain-to-child
+    tags: [judged]
+    input: Explain why the sky is blue to a 7-year-old in 3 sentences or fewer.
+    assert:
+      - llm_judge: |
+          1. Mentions sunlight being made of many colours, or light scattering, in simple words.
+          2. Uses vocabulary a 7-year-old understands (no "Rayleigh", "wavelength" unexplained).
+          3. Three sentences or fewer.
+          4. Factually correct.
