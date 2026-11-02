@@ -35,6 +35,35 @@ cases:
 prompt-tests run suites/core.yaml -m ollama:qwen2.5:1.5b -m ollama:qwen2.5:3b --judge ollama:qwen2.5:3b
 ```
 
+<!-- overview:start -->
+## Overview
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/overview-dark.svg">
+  <img alt="prompt-tests overview: how it works and its output. Key numbers: 91.7% pass rate, both models; 0.5 s / 0.9 s p50 latency, 1.5B / 3B; 9 scorer types; 12 cases in the suite. Stack: Python · Ollama · OpenAI-compatible APIs · SQLite · JSON Schema · LLM-as-judge." src="docs/overview-light.svg" width="100%">
+</picture>
+
+## Interface
+
+You run it from the terminal and read the results in an HTML report.
+
+```
+prompt-tests run <suite.yaml> -m <model> [-m <model> ...] [options]
+```
+
+| Option | What it does | Default |
+|---|---|---|
+| `-m`, `--model` | `ollama:<model>` or `openai:<model>@<url>`; repeat to compare | required |
+| `--judge` | Model for `llm_judge` assertions | |
+| `--embed` | Ollama embedding model for `semantic` | `nomic-embed-text` |
+| `--min-pass` | Exits with code 1 if a model's pass rate is below this | |
+| `--workers` | Parallel workers | 2 |
+| `--no-cache` | Skips the response cache | off |
+| `--out` | Report folder | `prompt-tests-report` |
+
+The report is one HTML file with a card per model (pass rate, mean score, p50 and p95 latency), pass rates by tag and a table of cases by model. Click any result to see the input, each model's output (the first sample if a suite repeats) and each scorer's score and reason. Each run also writes `results.json`.
+<!-- overview:end -->
+
 ## Real run
 
 The bundled 12-case suite, two local models, on an 8 GB Apple Silicon Mac:
